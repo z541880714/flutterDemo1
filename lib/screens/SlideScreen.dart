@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_demo1/transitions/slide_route.dart';
+
+import 'fade_screen.dart';
+
+class SlideScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue,
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            RaisedButton(
+              child: Text('SlideRightTransition'),
+              onPressed: () =>
+                  Navigator.push(context, SlideRightRoute(Screen2())),
+            ),
+            RaisedButton(
+              child: Text('SlideLeftTransition'),
+              onPressed: () =>
+                  Navigator.push(context, SlideLeftRoute(Screen2())),
+            ),
+            RaisedButton(
+              child: Text('SlideTopTransition'),
+              onPressed: () =>
+                  Navigator.push(context, SlideTopRoute(Screen2())),
+            ),
+            RaisedButton(
+              child: Text('SlideBottomTransition'),
+              onPressed: () =>
+                  Navigator.push(context, SlideBottomRoute(Screen2())),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
