@@ -13,7 +13,7 @@ class MyEventChannel {
   }
 
   void _onEvent(Object? event) {
-    print('onEvent: $event');
+    // print('onEvent: $event');
   }
 
   void _onError(Object? error) {
