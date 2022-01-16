@@ -1,19 +1,26 @@
 import 'package:flutter/services.dart';
 
 class MyEventChannel {
+  final String name;
+  final EventChannel eventChannel;
+  Future Function(Object s)? _eventCallback;
+
   MyEventChannel(this.name) : eventChannel = EventChannel(name);
 
-  final String name;
-
-  final EventChannel eventChannel;
-
-  void registerEventBroadcast() {
+  registerEvent(Future Function(Object? message)? callback) {
     print('register evnet broadcast');
+    _eventCallback = callback;
     eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
   }
 
+  unregisterEvent() {
+    eventChannel.receiveBroadcastStream().listen(null, onError: null);
+  }
+
   void _onEvent(Object? event) {
-    // print('onEvent: $event');
+    if (event != null) {
+      _eventCallback?.call(event);
+    }
   }
 
   void _onError(Object? error) {

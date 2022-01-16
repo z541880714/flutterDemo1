@@ -37,6 +37,8 @@ mixin MA {
   }
 }
 
+//on的用法, MB 为S 类的子类..  只有 S 的 子类 才能 混入 MB ,
+// MB 实现的方法 是作用在S 类上 是 S 类的扩展... 所以 所有的  S 子类可以 混入, 其他类不能混入. .
 mixin MB on S {
   fun() {
     log("start !!");
@@ -52,6 +54,12 @@ class MC {
 }
 
 class A extends S with MA, MB {}
+
+//D 为 S 的子类, 可以混入MB
+class D extends A with MB {}
+
+/// E 不是 S 的子类, 不能混入 MB
+// class E with MB {}
 
 class B extends S with MB, MA {}
 

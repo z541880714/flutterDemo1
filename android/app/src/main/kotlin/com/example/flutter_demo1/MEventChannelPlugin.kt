@@ -28,7 +28,6 @@ class MEventChannelPlugin(val name: String) : EventChannel.StreamHandler {
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
-        println("onListen:  start listen event channel !!!")
         this.eventSink = events
     }
 

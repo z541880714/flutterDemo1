@@ -24,7 +24,10 @@ class Screen2 extends StatelessWidget {
       body: Center(
         child: RaisedButton(
           child: Text('Go Back!'),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pushNamed(context, '/home');
+            // Navigator.pop(context)
+          },
         ),
       ),
     );

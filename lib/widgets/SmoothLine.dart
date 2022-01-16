@@ -1,9 +1,126 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
+enum MovingLevel {
+  SPPED_QUICK,
+  SPEED_SLOWLY,
+}
+
+class MyCustomPaint extends StatefulWidget {
+  final Function(int)? percentCallback;
+
+  MyCustomPaint({Key? key, this.percentCallback}) : super(key: key);
+
+  final _myCustomPaint = _MyCustomPaint();
+
+  void start(MovingLevel level) {
+    _myCustomPaint.start(level);
+  }
+
+  void stop() {
+    _myCustomPaint.stop();
+  }
+
+  @override
+  State<StatefulWidget> createState() => _myCustomPaint;
+}
+
+//速度... 的快慢
+class _MyCustomPaint extends State<MyCustomPaint>
+    with TickerProviderStateMixin {
+  late Animation<double> _animation;
+  late AnimationController _animationController;
+  int _percent = 0;
+
+  //默认 是停止状态...
+  bool isPaused = true;
+
+  //皇冠有啥的哦, 好的吧, 就是的呢?  你说是就是吧, 哎,是的吧, 好的吧, 有戏的啊.
+  void start(MovingLevel speedLevel) {
+    if (!isPaused) {
+      return; //如果还没有停止... 那么就不执行...
+    }
+    isPaused = false;
+    print('------------------>start');
+    int leftMilliSeconds;
+    switch (speedLevel) {
+      case MovingLevel.SPPED_QUICK:
+        //20000.0 ~/ 100  表示 每一个百分比 所花的时间..
+        leftMilliSeconds = (100 - _percent) * 2000.0 ~/ 100;
+        break;
+      case MovingLevel.SPEED_SLOWLY:
+        leftMilliSeconds = (100 - _percent) * 20000.0 ~/ 100;
+        break;
+    }
+    _animationController = AnimationController(
+        duration: Duration(milliseconds: leftMilliSeconds), vsync: this);
+    //从当前的 百分数进度开始..
+    _animation = Tween<double>(begin: _percent.toDouble(), end: 100)
+        .animate(_animationController)
+      ..addListener(() {
+        int value = _animation.value.toInt();
+        if (_percent != value) {
+          setState(() {
+            // The state that has changed here is the animation object’s value.
+            _percent = value;
+            //回调当前的百分比...
+            Future(() => widget.percentCallback?.call(_percent));
+          });
+        }
+      });
+    _animationController.forward();
+  }
+
+  void stop() {
+    if (isPaused) {
+      return;
+    }
+    print('------------------>stop');
+    isPaused = true;
+    _animationController.stop(canceled: true);
+    _animationController.dispose();
+  }
+
+  void reset([MovingLevel movingLevel = MovingLevel.SPEED_SLOWLY]) {
+    stop();
+    start(movingLevel);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    start(MovingLevel.SPEED_SLOWLY); //默认一开始是慢速 动画...
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Flex(
+      direction: Axis.vertical,
+      children: [
+        SizedBox(
+          height: 0,
+          child: Text(_percent.toString()), //不用一个 组件来渲染, 进度条不显示,  这是啥原因...
+        ),
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            child: CustomPaint(
+              painter: SmoothLine(_percent),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class SmoothLine extends CustomPainter {
-  int rightEnd = 100;
   final fillColors = [Colors.blue.shade50, Colors.blue.shade800];
   Paint painter = Paint()
     ..strokeWidth = 5
@@ -18,7 +135,6 @@ class SmoothLine extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    print('size width: ${size.width},  height: ${size.height}');
     _initPoints(size);
     Path path = _initPath(size, points);
     _drawLine(canvas, size, path);
@@ -74,7 +190,6 @@ class SmoothLine extends CustomPainter {
   }
 
   double _getXFromPercent(Size size, int percent) {
-    print('size width: ${size.width}');
     return size.width / 100 * percent;
   }
 

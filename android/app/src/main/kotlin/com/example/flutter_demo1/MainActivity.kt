@@ -37,11 +37,12 @@ class MainActivity : FlutterActivity() {
         eventChannel.register(flutterEngine!!.dartExecutor.binaryMessenger)
 
 
-
-
         thread {
             while (true) {
-                runOnUiThread { eventChannel.sendEvent() }
+                runOnUiThread {
+                    eventChannel.sendEvent()
+                    messageChannel.send("hahahahahaha")
+                }
                 Thread.sleep(1000)
             }
         }
